@@ -2,15 +2,17 @@
 set -e
 
 
-if [ $GIT_REPO == "gitlab" ]; then
+if [ $GIT_REPO == "gitlab" ] && [ $GIT_INIT -eq 0 ]; then
 	GIT_URL="gitlab/gitlab"
 	sed -i '$i'"\\"'    location /gitlab {'"\n""\\"'        proxy_pass http://gitlab/gitlab;'"\n""\\"'        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;'"\n""\\"'        proxy_set_header Client-IP $remote_addr;'"\n""\\"'    }' /resources/configuration/sites-enabled/tools-context.conf
 	jq ".core[].components[1] |= .+ {id: \"gitlab\", title: \"gitlab\", img: \"img\/gitlab.svg\", link: \"/gitlab\"}" /resources/release_note/plugins.json > /resources/release_note/plugins.json
-elif [ $GIT_REPO == "gerrit" ]; then
+elif [ $GIT_REPO == "gerrit" ] && [ $GIT_INIT -eq 0 ]; then
 	GIT_URL="gerrit:8080/gerrit"
 	sed -i '$i'"\\"'    location /gerrit {'"\n""\\"'        client_max_body_size 512m;'"\n""\\"'        proxy_pass  http://gerrit:8080;'"\n""\\"'    }' /resources/configuration/sites-enabled/tools-context.conf
 	jq ".core[].components[1] |= .+ {id: \"gerrit\", title: \"gerrit\", img: \"img\/gerrit.jpg\", link: \"/gerrit/\"}" /resources/release_note/plugins.json > /resources/release_note/plugins.json
 fi
+
+export GIT_INIT=1
 
 cp -R /resources/configuration/* /etc/nginx/
 cp -R /resources/release_note/* /usr/share/nginx/html/
