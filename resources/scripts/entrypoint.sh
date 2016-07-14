@@ -19,10 +19,10 @@ declare -a DEPENDENCIES=( "kibana:5601" "jenkins:8080" "sonar:9000" "sensu-uchiw
 
 if [ $GIT_REPO == "gitlab" ]; then
 	DEPENDENCIES+=("gitlab/gitlab")
-	cp /resources/configuration/sites-available/gitlab.conf /etc/nginx/sites-enabled/
+	sed -i '$i'"\\"'    location /gitlab {'"\n""\\"'        proxy_pass http://gitlab/gitlab;'"\n""\\"'        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;'"\n""\\"'        proxy_set_header Client-IP $remote_addr;'"\n""\\"'    }' /etc/nginx/sites-enabled/tools-context.conf
 elif [ $GIT_REPO == "gerrit" ]; then
 	DEPENDENCIES+=("gerrit:8080/gerrit")
-	cp /resources/configuration/sites-available/gerrit.conf /etc/nginx/sites-enabled/
+	sed -i '$i'"\\"'    location /gerrit {'"\n""\\"'        client_max_body_size 512m;'"\n""\\"'        proxy_pass  http://gerrit:8080;'"\n""\\"'    }' /etc/nginx/sites-enabled/tools-context
 fi
 
 for d in ${DEPENDENCIES[@]}; do 
