@@ -1,6 +1,15 @@
 #!/bin/bash
 set -e
 
+
+if [ $GIT_REPO == "gitlab" ]; then
+	GIT_URL="gitlab/gitlab"
+	sed -i '$i'"\\"'    location /gitlab {'"\n""\\"'        proxy_pass http://gitlab/gitlab;'"\n""\\"'        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;'"\n""\\"'        proxy_set_header Client-IP $remote_addr;'"\n""\\"'    }' /resources/configuration/sites-enabled/tools-context.conf
+elif [ $GIT_REPO == "gerrit" ]; then
+	GIT_URL="gerrit:8080/gerrit"
+	sed -i '$i'"\\"'    location /gerrit {'"\n""\\"'        client_max_body_size 512m;'"\n""\\"'        proxy_pass  http://gerrit:8080;'"\n""\\"'    }' /resources/configuration/sites-enabled/tools-context.conf
+fi
+
 cp -R /resources/configuration/* /etc/nginx/
 cp -R /resources/release_note/* /usr/share/nginx/html/
 
@@ -15,15 +24,8 @@ perl -p -i -e 's/###([^#]+)###/defined $ENV{$1} ? $ENV{$1} : $&/eg' < "/template
 # the depends_on see https://github.com/docker/compose/pull/686 and https://github.com/docker/compose/issues/2682 is introduced
 # on docker compose
 SLEEP_TIME=2
-declare -a DEPENDENCIES=( "kibana:5601" "jenkins:8080" "sonar:9000" "sensu-uchiwa:3000" "nexus:8081" )
 
-if [ $GIT_REPO == "gitlab" ]; then
-	DEPENDENCIES+=("gitlab/gitlab")
-	sed -i '$i'"\\"'    location /gitlab {'"\n""\\"'        proxy_pass http://gitlab/gitlab;'"\n""\\"'        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;'"\n""\\"'        proxy_set_header Client-IP $remote_addr;'"\n""\\"'    }' /etc/nginx/sites-enabled/tools-context.conf
-elif [ $GIT_REPO == "gerrit" ]; then
-	DEPENDENCIES+=("gerrit:8080/gerrit")
-	sed -i '$i'"\\"'    location /gerrit {'"\n""\\"'        client_max_body_size 512m;'"\n""\\"'        proxy_pass  http://gerrit:8080;'"\n""\\"'    }' /etc/nginx/sites-enabled/tools-context
-fi
+declare -a DEPENDENCIES=( "kibana:5601" "jenkins:8080" "sonar:9000" "sensu-uchiwa:3000" "nexus:8081" "$GIT_URL")
 
 for d in ${DEPENDENCIES[@]}; do 
   echo "waiting for $d to be available";
