@@ -11,19 +11,11 @@
                         "link": "/jenkins/"
                     },
                     {
-                        "id": "gerrit",
-                        "title": "gerrit",
-                        "img": "img/gerrit.jpg",
+                        "id": "### GITTYPE ###",
+                        "title": "### GITTYPE ###",
+                        "img": "### GITTYPE ###",
                         "description": "Git Repository Management & Code Review Tool",
-                        "link": "/gerrit/"
-                    },
-                    {
-                        "id": "gitlab",
-                        "title": "gitlab",
-                        "img": "img/gitlab.svg",
-                        "description": "Git Repository Management & Code Review Tool",
-                        "link": "/gitlab"
-
+                        "link": "### GITTYPE ###"
                     },
                     {
                         "id": "sonar",
