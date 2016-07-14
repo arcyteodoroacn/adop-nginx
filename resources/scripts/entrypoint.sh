@@ -19,10 +19,8 @@ declare -a DEPENDENCIES=( "kibana:5601" "jenkins:8080" "sonar:9000" "sensu-uchiw
 
 if [ $GIT_REPO == "gitlab" ]; then
 	DEPENDENCIES+=("gitlab/gitlab")
-	cp /resources/configuration/sites-available/gitlab.conf /etc/nginx/sites-enabled/
 elif [ $GIT_REPO == "gerrit" ]; then
 	DEPENDENCIES+=("gerrit:8080/gerrit")
-	cp /resources/configuration/sites-available/gerrit.conf /etc/nginx/sites-enabled/
 fi
 
 for d in ${DEPENDENCIES[@]}; do 
