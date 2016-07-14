@@ -17,12 +17,12 @@ perl -p -i -e 's/###([^#]+)###/defined $ENV{$1} ? $ENV{$1} : $&/eg' < "/template
 SLEEP_TIME=2
 declare -a DEPENDENCIES=( "kibana:5601" "jenkins:8080" "sonar:9000" "sensu-uchiwa:3000" "nexus:8081" )
 
-if [ ADOP_GITLAB_ENABLED = true ]; then
+if [ GIT_REPO = "gitlab" ]; then
 	DEPENDENCIES+=("gitlab/gitlab")
-fi
-
-if [ ADOP_GERRIT_ENABLED = true ]; then
+	cp -R /resources/configuration/sites-available/gitlab.conf /etc/nginx/sites-enabled/
+elif [ GIT_REPO = "gerrit" ]; then
 	DEPENDENCIES+=("gerrit:8080/gerrit")
+	cp -R /resources/configuration/sites-available/gerrit.conf /etc/nginx/sites-enabled/
 fi
 
 for d in ${DEPENDENCIES[@]}; do 
