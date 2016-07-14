@@ -19,7 +19,9 @@ declare -a DEPENDENCIES=( "kibana:5601" "jenkins:8080" "sonar:9000" "sensu-uchiw
 
 if [ ADOP_GITLAB_ENABLED = true ]; then
 	DEPENDENCIES+=("gitlab/gitlab")
-elif [ ADOP_GERRIT_ENABLED = true ]; then
+fi
+
+if [ ADOP_GERRIT_ENABLED = true ]; then
 	DEPENDENCIES+=("gerrit:8080/gerrit")
 fi
 
