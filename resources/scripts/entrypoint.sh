@@ -6,8 +6,8 @@ if [ $GIT_REPO == "gitlab" ]; then
 	GIT_CONF="proxy_pass http:\/\/gitlab\/gitlab; \
 \\n\\tproxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for; \
 \\n\\tproxy_set_header Client-IP \$remote_addr;"
-	sed "s/###GIT_REPO###/$GIT_REPO/g" /resources/configuration/sites-enabled/tools-context.conf
-	sed "s/###GIT_CONF###/$GIT_CONF/g" /resources/configuration/sites-enabled/tools-context.conf
+	sed -i "s/###GIT_REPO###/$GIT_REPO/g" /resources/configuration/sites-enabled/tools-context.conf
+	sed -i "s/###GIT_CONF###/$GIT_CONF/g" /resources/configuration/sites-enabled/tools-context.conf
 	jq ".core[].components[1] |= .+ {id: \"gitlab\", title: \"gitlab\", img: \"img\/gitlab.svg\", link: \"/gitlab\"}" /resources/release_note/plugins.json > /resources/release_note/pluginsgitlab.json
 	mv /resources/release_note/pluginsgitlab.json /resources/release_note/plugins.json
 elif [ $GIT_REPO == "gerrit" ]; then
