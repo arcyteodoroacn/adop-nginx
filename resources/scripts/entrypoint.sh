@@ -1,15 +1,21 @@
 #!/bin/bash
 set -e
 
-
-if [ $GIT_REPO == "gitlab" ] && [ $GIT_INIT -eq 0 ]; then
+if [ $GIT_REPO == "gitlab" ]; then
 	GIT_URL="gitlab/gitlab"
-	sed -i '$i'"\\"'    location /gitlab {'"\n""\\"'        proxy_pass http://gitlab/gitlab;'"\n""\\"'        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;'"\n""\\"'        proxy_set_header Client-IP $remote_addr;'"\n""\\"'    }' /resources/configuration/sites-enabled/tools-context.conf
+	GIT_CONF="proxy_pass http:\/\/gitlab\/gitlab; \
+\\n\\tproxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for; \
+\\n\\tproxy_set_header Client-IP \$remote_addr;"
+	sed "s/###GIT_REPO###/$GIT_REPO/g" /resources/configuration/sites-enabled/tools-context.conf
+	sed "s/###GIT_CONF###/$GIT_CONF/g" /resources/configuration/sites-enabled/tools-context.conf
 	jq ".core[].components[1] |= .+ {id: \"gitlab\", title: \"gitlab\", img: \"img\/gitlab.svg\", link: \"/gitlab\"}" /resources/release_note/plugins.json > /resources/release_note/pluginsgitlab.json
 	mv /resources/release_note/pluginsgitlab.json /resources/release_note/plugins.json
-elif [ $GIT_REPO == "gerrit" ] && [ $GIT_INIT -eq 0 ]; then
+elif [ $GIT_REPO == "gerrit" ]; then
 	GIT_URL="gerrit:8080/gerrit"
-	sed -i '$i'"\\"'    location /gerrit {'"\n""\\"'        client_max_body_size 512m;'"\n""\\"'        proxy_pass  http://gerrit:8080;'"\n""\\"'    }' /resources/configuration/sites-enabled/tools-context.conf
+	GIT_CONF="client_max_body_size 512m; \
+\\n\\tproxy_pass http:\/\/gerrit:8080;"
+	sed -i "s/###GIT_REPO###/$GIT_REPO/g" /resources/configuration/sites-enabled/tools-context.conf
+	sed -i "s/###GIT_CONF###/$GIT_CONF/g" /resources/configuration/sites-enabled/tools-context.conf
 	jq ".core[].components[1] |= .+ {id: \"gerrit\", title: \"gerrit\", img: \"img\/gerrit.jpg\", link: \"/gerrit/\"}" /resources/release_note/plugins.json > /resources/release_note/pluginsgerrit.json
 	mv /resources/release_note/pluginsgerrit.json /resources/release_note/plugins.json
 fi
