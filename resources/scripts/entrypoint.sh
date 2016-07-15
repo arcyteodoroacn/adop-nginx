@@ -20,8 +20,6 @@ elif [ $GIT_REPO == "gerrit" ]; then
 	mv /resources/release_note/pluginsgerrit.json /resources/release_note/plugins.json
 fi
 
-export GIT_INIT=1
-
 cp -R /resources/configuration/* /etc/nginx/
 cp -R /resources/release_note/* /usr/share/nginx/html/
 
